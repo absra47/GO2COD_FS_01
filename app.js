@@ -2,8 +2,13 @@ require("dotenv").config();
 
 const express = require("express");
 const expessLayout = require("express-ejs-layouts");
+
+const connectDB = require("./server/config/db");
 const app = express();
 const PORT = 5000 || process.env.PORT;
+
+//connect DB
+connectDB();
 
 app.use(express.static("public"));
 
