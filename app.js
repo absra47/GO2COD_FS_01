@@ -2,17 +2,30 @@ require("dotenv").config();
 
 const express = require("express");
 const expessLayout = require("express-ejs-layouts");
+const cookieParser = require("cookie-parser");
+const MongoStore = require("connect-mongo");
 
 const connectDB = require("./server/config/db");
+const session = require("express-session");
 const app = express();
-const PORT = 5000 || process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 //connect DB
 connectDB();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.static("public"));
+
+app.use(
+  session({
+    secret: "keybord cat",
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
+  })
+);
 
 //Templating Engine
 app.use(expessLayout);
