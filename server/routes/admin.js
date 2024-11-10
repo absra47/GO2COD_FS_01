@@ -69,12 +69,61 @@ router.post("/admin", async (req, res) => {
 });
 
 /**
- * POST /
- * Admin-Check Login
+ * GET /
+ * Admin-Dashbord
  */
 
 router.get("/dashbord", authMiddleware, async (req, res) => {
-  res.render("admin/dashbord");
+  try {
+    const locals = {
+      title: "Dashbord",
+      description: "Simple Blog created with NodeJs, Express & MongoDb.",
+    };
+    const data = await Post.find();
+    res.render("admin/dashbord", {
+      locals,
+      data,
+      layout: adminLayout,
+    });
+  } catch (error) {}
+});
+
+/**
+ * GET /
+ * Admin-Create-New-post
+ */
+router.get("/add-post", authMiddleware, async (req, res) => {
+  try {
+    const locals = {
+      title: "Add Post",
+      description: "Simple Blog created with NodeJs, Express & MongoDb.",
+    };
+    const data = await Post.find();
+    res.render("admin/add-post", {
+      locals,
+      layout: adminLayout,
+    });
+  } catch (error) {}
+});
+/**
+ * POST /
+ * Admin-Create-New-post
+ */
+router.post("/add-post", authMiddleware, async (req, res) => {
+  try {
+    try {
+      const newPost = new Post({
+        title: req.body.title,
+        body: req.body.body,
+      });
+      await Post.create(newPost);
+      res.redirect("/dashbord");
+    } catch (error) {
+      console.log(error);
+    }
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 /**
