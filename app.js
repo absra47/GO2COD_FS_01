@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const expessLayout = require("express-ejs-layouts");
+const methodOverride = require("method-override");
 const cookieParser = require("cookie-parser");
 const MongoStore = require("connect-mongo");
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static("public"));
+app.use(methodOverride("_method"));
 
 app.use(
   session({

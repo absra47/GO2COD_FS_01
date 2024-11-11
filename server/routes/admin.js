@@ -56,7 +56,7 @@ router.post("/admin", async (req, res) => {
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    if (!password) {
+    if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid Credentials" });
     }
 
@@ -85,7 +85,9 @@ router.get("/dashbord", authMiddleware, async (req, res) => {
       data,
       layout: adminLayout,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 /**
@@ -103,7 +105,9 @@ router.get("/add-post", authMiddleware, async (req, res) => {
       locals,
       layout: adminLayout,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 });
 /**
  * POST /
@@ -121,6 +125,44 @@ router.post("/add-post", authMiddleware, async (req, res) => {
     } catch (error) {
       console.log(error);
     }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+/**
+ * GET /
+ * Admin-Create-New-post
+ */
+router.get("/edit-post/:id", authMiddleware, async (req, res) => {
+  try {
+    const locals = {
+      title: "Add Post",
+      description: "Simple Blog created with NodeJs, Express & MongoDb.",
+    };
+    const data = await Post.findOne({ _id: req.params.id });
+    res.render("admin/edit-post", {
+      locals,
+      data,
+      layout: adminLayout,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+/**
+ * PUT /
+ * Admin-Create-New-post
+ */
+router.put("/edit-post/:id", authMiddleware, async (req, res) => {
+  try {
+    await Post.findByIdAndUpdate(req.params.id, {
+      title: req.body.title,
+      body: req.body.body,
+      updatedAt: Date.now(),
+    });
+    res.redirect(`/edit-post/${req.params.id}`);
   } catch (error) {
     console.log(error);
   }
@@ -150,8 +192,28 @@ router.post("/register", async (req, res) => {
     return res.status(500).json({ message: "Unexpected server error" });
   }
 });
-router.get("/test", (req, res) => {
-  res.json({ message: "Test route working fine" });
+
+/**
+ * DELETE /
+ * Admin-Delete-post
+ */
+router.delete("/delete-post/:id", authMiddleware, async (req, res) => {
+  try {
+    await Post.deleteOne({ _id: req.params.id });
+    res.redirect("/dashbord");
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+/**
+ * GET /
+ * Admin-Logout
+ */
+router.get("/logout", (req, res) => {
+  res.clearCookie("token");
+  //res.json({ message: "Logout Successfull." });
+  res.redirect("/");
 });
 
 module.exports = router;
