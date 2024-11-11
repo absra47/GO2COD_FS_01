@@ -16,13 +16,13 @@ router.get("", async (req, res) => {
 
   try {
     const data = await Post.find();
-    res.render("index", { locals, data });
+    res.render("index", { locals, data, currentRoute: "/" });
   } catch (error) {
     console.log(error);
   }
 });
 router.get("/about", (req, res) => {
-  res.render("about");
+  res.render("about", { currentRoute: "/about" });
 });
 
 /* POST /
@@ -73,6 +73,7 @@ router.get("/post/:id", async (req, res) => {
     res.render("post", {
       locals,
       data,
+      currentRoute: `/post/${slug}`,
     });
   } catch (error) {
     console.log(error);
